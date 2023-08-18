@@ -34,6 +34,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "pagedjs": "^0.4.3"
   }
 }
