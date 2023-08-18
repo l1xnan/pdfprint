@@ -26,6 +26,13 @@
  * ```
  */
 
-import './index.css';
+import "./index.css";
 
-console.log('👋 This message is being logged by "renderer.js", included via Vite');
+function hello(name: string) {
+  console.log(`👋 Hello ${name}`);
+}
+console.log(
+  '👋 This message is being logged by "renderer.js", included via Vite'
+);
+
+hello("Electron")
