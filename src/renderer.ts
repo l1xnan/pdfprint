@@ -26,7 +26,11 @@
  * ```
  */
 
-import { WebviewTag } from "electron";
+import { SaveDialogOptions, WebviewTag, ipcRenderer } from "electron";
+
+import * as fs from "fs";
+import * as path from "path";
+
 import "./index.css";
 
 function hello(name: string) {
@@ -39,22 +43,60 @@ console.log(
 hello("Electron");
 
 function createWebview() {
-  var webview: any = document.createElement("webview");
+  const webview = document.createElement("webview") as WebviewTag;
   webview.src = "https://pandoc.org/MANUAL.html";
-  webview.preload = `file://./node_modules/pagedjs/dist/paged.polyfill.min.js`;
+  webview.setAttribute("style", "height:80vh;width:100vw")
+  // webview.preload = `file://./node_modules/pagedjs/dist/paged.polyfill.min.js`;
+
+  // webview.preload = "file:./preload.js";
+  document.body.appendChild(webview);
+
+  // webview.openDevTools();
   return webview;
 }
-// createWebview();
 
-function printToPDF() {
+async function printToPDF() {
   const element = document.getElementsByTagName("webview")[0] as WebviewTag;
   console.log(element);
 
-  element.printToPDF({}).then((res) => {
-    console.log(res);
-  });
+  const data = await element.printToPDF({});
+
+  const filePath = (await showSaveDialog({}))?.filePath;
+  if (filePath) {
+    fs.writeFile(filePath, data, (error) => {
+      if (error) throw error;
+      console.log("保存成功");
+    });
+  }
 }
 
+function openDevTools() {
+  const webview = document.getElementsByTagName("webview")[0] as WebviewTag;
+
+  webview.openDevTools();
+}
+
+async function showSaveDialog(options: SaveDialogOptions) {
+  try {
+    const result = await ipcRenderer.invoke("show-save-dialog", {
+      title: "保存文件",
+      // defaultPath: '/path/to/default/file.txt',
+      buttonLabel: "保存",
+      filters: [
+        { name: "PDF文件", extensions: ["pdf"] },
+        { name: "所有文件", extensions: ["*"] },
+      ],
+      ...options,
+    });
+    console.log(result.filePath);
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+createWebview();
+
+document.getElementById("print-to-pdf").addEventListener("click", printToPDF);
 document
-  .getElementsByTagName("button")[0]
-  .addEventListener("click", printToPDF);
+  .getElementById("open-devtools")
+  .addEventListener("click", openDevTools);

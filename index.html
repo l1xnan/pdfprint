@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-    <button>Print To PDF</button>
-    <script type="module" src="/src/renderer.ts"></script>
 
-    <webview
-      src="https://pandoc.org/MANUAL.html"
-      style="height: 800px; width: 1000px"
-      preload="file://./node_modules/pagedjs/dist/paged.polyfill.min.js"
-    ></webview>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello World!</title>
+</head>
+
+<body>
+  <h1>💖 Hello World!</h1>
+  <p>Welcome to your Electron application.</p>
+  <button id="print-to-pdf">Print To PDF</button>
+  <button id="open-devtools">Open DevTools</button>
+  <script type="module" src="/src/renderer.ts"></script>
+</body>
+
 </html>

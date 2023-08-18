@@ -1,7 +1,8 @@
 // const { app, BrowserWindow } = require("electron");
 
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
+import { setupIPC } from "./ipc";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -18,6 +19,7 @@ const createWindow = () => {
       nodeIntegration: true,
       contextIsolation: false,
       webviewTag: true,
+      allowRunningInsecureContent: true,
     },
   });
 
@@ -30,6 +32,7 @@ const createWindow = () => {
     );
   }
 
+  setupIPC();
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
@@ -58,3 +61,18 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+app.on("web-contents-created", (event, contents) => {
+  contents.on("will-attach-webview", (event, webPreferences, params) => {
+    console.log("will-attach-webview", params.src);
+
+    webPreferences.nodeIntegration = true;
+    webPreferences.preload = path.join(__dirname, "webview.js");
+
+    console.log("webPreferences", webPreferences);
+    // // 验证正在加载的 URL
+    // if (!params.src.startsWith("https://example.com/")) {
+    //   event.preventDefault();
+    // }
+  });
+});
