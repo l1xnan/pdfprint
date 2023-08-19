@@ -4,3 +4,29 @@ header,
 #sidebar {
   display: none;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  position: relative;
+}
+
+.md-print-anchor {
+  white-space: pre !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  display: inline-block !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  right: 0 !important;
+  outline: 0 !important;
+  background: 0 0 !important;
+  text-decoration: initial !important;
+  text-shadow: initial !important;
+}
