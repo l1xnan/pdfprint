@@ -26,7 +26,7 @@ export function getHeadingTree() {
   const root = new TreeNode("", "Root", 0);
   let prev = root;
 
-  headings.forEach((heading) => {
+  headings.forEach((heading: HTMLElement) => {
     const level = parseInt(heading.tagName.slice(1));
 
     const link = heading.querySelector("a.md-print-anchor") as HTMLLinkElement;
@@ -34,7 +34,7 @@ export function getHeadingTree() {
     if (!regexMatch) {
       return;
     }
-    const newNode = new TreeNode(regexMatch[1], heading.textContent, level);
+    const newNode = new TreeNode(regexMatch[1], heading.innerText, level);
 
     while (prev.level >= level) {
       prev = prev.parent;

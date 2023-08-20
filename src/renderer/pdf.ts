@@ -63,10 +63,16 @@ export function addBookmarks(buffer: Uint8Array, root: TreeNode, positions: TPos
   };
 
   for (const item of root.children) {
-    const [pageIdx, pos] = positions[item.key];
+    const position = positions[item.key];
+    if (!position) {
+      console.error(`${item.key} not find position`);
+      continue;
+    }
+    const [pageIdx, pos] = position;
     const child = addRoot(item.title, pageIdx, pos);
     generateOutline(item, child);
   }
 
-  PDFOutLineMaker.SaveToFile("12345.pdf", PDFAnalyst);
+  const stream = PDFOutLineMaker.Save(PDFAnalyst);
+  return stream;
 }

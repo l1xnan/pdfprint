@@ -43,10 +43,10 @@ function modifyHeaders() {
 
 // 定义可以被渲染进程调用的 API
 export const api = {
-  sendToMain: (message) => {
+  sendToMain: (message: string) => {
     ipcRenderer.send("message-to-main", message);
   },
-  receiveFromMain: (callback) => {
+  receiveFromMain: (callback: (message: string) => void) => {
     ipcRenderer.on("message-from-main", (event, message) => {
       callback(message);
     });
@@ -56,12 +56,11 @@ export const api = {
   },
   getHeadings: () => {
     const data: any = {};
-    document.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach((item) => {
-      // item.querySelector()
+    document.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach((item: HTMLElement) => {
       const link = item.querySelector("a.md-print-anchor") as HTMLLinkElement;
       const regexMatch = /^af:\/\/(.+)$/.exec(link?.href ?? "");
       if (regexMatch) {
-        data[regexMatch[1]] = [item.tagName, item.textContent];
+        data[regexMatch[1]] = [item.tagName, item.innerText];
       }
     });
     return data;

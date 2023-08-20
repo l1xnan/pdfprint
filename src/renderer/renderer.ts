@@ -30,66 +30,38 @@ import { WebviewTag } from "electron";
 
 import * as fs from "fs";
 
-import "./index.css";
-import { getContents, showSaveDialog } from "./renderer/ipc";
-import { addBookmarks, getHeadingPosition } from "./renderer/pdf";
+import { getContents, showSaveDialog } from "./ipc";
+import { addBookmarks, getHeadingPosition } from "./pdf";
 
-function hello(name: string) {
-  console.log(`👋 Hello ${name}`);
-}
 console.log('👋 This message is being logged by "renderer.js", included via Vite');
 
-hello("Electron");
-
-function createWebview() {
+export function createWebview(url: string) {
   const webview = document.createElement("webview") as WebviewTag;
   // webview.src = "https://pandoc.org/MANUAL.html";
-  webview.src = "https://pandoc.org/installing.html";
+  // webview.src = "https://pandoc.org/installing.html";
+  webview.src = url;
   webview.setAttribute("style", "height:80vh;width:100vw");
   webview.nodeintegration = true;
-  // webview.preload = `file://./node_modules/pagedjs/dist/paged.polyfill.min.js`;
-
-  // webview.preload = "file:./preload.js";
   document.body.appendChild(webview);
-
-  // const id = webview.getWebContentsId();
-  // const webviewContents = webContents.fromId(id);
-  // // 在 webview 加载完成后执行回调函数
-  // webviewContents.on("did-finish-load", () => {
-  //   // 获取 webview 中的 HTML 内容
-  //   webviewContents.executeJavaScript(
-  //     `
-  //   document.documentElement.outerHTML;
-  // `,
-  //     (result: any) => {
-  //       // 将 HTML 内容传递给渲染进程
-  //       mainWindow.webContents.send("html-content", result);
-  //     }
-  //   );
-  // });
 
   return webview;
 }
 
-async function printToPDF() {
-  // const element = document.getElementsByTagName("webview")[0] as WebviewTag;
+export async function printToPDF() {
   const webview = document.querySelector("webview") as WebviewTag;
-
-  console.log(webview);
 
   const headings = await getHeadings(webview);
   console.log(headings);
-  // return;
 
   const data = await webview.printToPDF({});
 
   const filePath = (await showSaveDialog({}))?.filePath;
 
   const posistions = await getHeadingPosition(data);
-  console.log(headings);
-  addBookmarks(data, headings, posistions);
+
+  const stream = addBookmarks(data, headings, posistions);
   if (filePath) {
-    fs.writeFile(filePath, data, (error) => {
+    fs.writeFile(filePath, stream.Stream, (error) => {
       if (error) throw error;
       console.log("保存成功");
     });
@@ -115,12 +87,12 @@ async function getHeadings(webview: WebviewTag) {
   return tree;
 }
 
-async function openDevTools() {
+export async function openDevTools() {
   const webview = document.querySelector("webview") as WebviewTag;
   webview.openDevTools();
 }
 
-async function test() {
+export async function testIPC() {
   // console.log(window.$api);
   // const webview = document.querySelector("webview") as WebviewTag;
   // webview.send("eventName")
@@ -156,12 +128,8 @@ async function test() {
   // console.log(res);
 }
 
-const webview = createWebview();
+// const webview = createWebview();
 
-webview.addEventListener("ipc-message", (event) => {
-  console.log(event);
-});
-
-document.getElementById("print-to-pdf").addEventListener("click", printToPDF);
-document.getElementById("ipc").addEventListener("click", test);
-document.getElementById("open-devtools").addEventListener("click", openDevTools);
+// webview.addEventListener("ipc-message", (event) => {
+//   console.log(event);
+// });

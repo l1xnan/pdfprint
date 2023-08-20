@@ -5135,6 +5135,12 @@ export class TPDFOutLineMaker {
 
   // 保存为文件
   SaveToFile(FileName, PDFAnalyst) {
+    const AStream = this.Save(PDFAnalyst);
+    // 下载文件
+    AStream.SaveToFile(FileName);
+  }
+  // 保存为文件
+  Save(PDFAnalyst) {
     const AStream = new TFileStream();
 
     // 检查加密
@@ -5164,7 +5170,6 @@ export class TPDFOutLineMaker {
       PDFParser.WriteDummyInfo(PDFAnalyst, AStream);
     }
 
-    // 下载文件
-    AStream.SaveToFile(FileName);
+    return AStream;
   }
 }

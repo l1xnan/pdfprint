@@ -2,7 +2,7 @@
 
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
-import { setupIPC } from "./main/ipc";
+import { setupIPC } from "./ipc";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -20,6 +20,9 @@ const createWindow = () => {
       contextIsolation: false,
       webviewTag: true,
       allowRunningInsecureContent: true,
+      defaultFontFamily: {
+        monospace: "Consolas",
+      },
     },
   });
 
@@ -27,9 +30,7 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
-    );
+    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
   setupIPC();
@@ -61,18 +62,15 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-
 app.on("web-contents-created", (event, contents) => {
   contents.on("will-attach-webview", (event, webPreferences, params) => {
     console.log("will-attach-webview", params.src);
 
-    webPreferences.nodeIntegration = true;
     webPreferences.preload = path.join(__dirname, "webview.js");
+    webPreferences.nodeIntegration = true;
 
-    console.log("webPreferences", webPreferences);
-    // // 验证正在加载的 URL
-    // if (!params.src.startsWith("https://example.com/")) {
-    //   event.preventDefault();
-    // }
+    webPreferences.defaultFontFamily = {
+      monospace: "consolas",
+    };
   });
 });
